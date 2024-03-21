@@ -2,11 +2,13 @@
 Extended Version of Original Shell
 Zainab Shahid
 
-Important info about my functions/implementations and my methodology:
+Important info about changes and additions to my functions/implementations and my methodology:
+This Shell is an extended version of my Shell V1.
+
 Note, my shell does not recognize sleep but will recognize /bin/sleep 30 &
 
 watchuser_thread() function:
-I read up on pthreads a lot in forums. I used the void *arg parameter as a generic pointer to pass any type to the function when its created using pthread_create. Apparently this is a common practice in C. When testing, this wasn't even working for me but I wanted to try to implement it anyway so i can maybe get some points?? After lots and lots of forums and research, I'm not even sure I implemented it right. Originally, I define my own MAX_STRING for the maximum size of the username, however forums suggested using 'ut_namesize' since it was already defined by the uptmx.h header file and would be less buggy.
+I read up on pthreads a lot in forums. I used the void *arg parameter as a generic pointer to pass any type to the function when its created using pthread_create. Apparently this is a common practice in C. After lots and lots of forums and research, I'm not even sure I implemented it right. Originally, I define my own MAX_STRING for the maximum size of the username, however forums suggested using 'ut_namesize' since it was already defined by the uptmx.h header file and would be less buggy.
 
 handle_watchuser() function:
 I originally had all this implementation on main but then decided to use it because calling it from main was too buggy. I called it from the checkcommand() function like i did all other functions.
@@ -16,9 +18,6 @@ I added this to check if my watchusers linked list was working properly. Enter t
 
 handleRedirections() function:
 This function accepts the file descriptor, redirection flag, file name, standard file descriptor (stdin, stdout, stderr), and flags for opening the file. If redirection is required, it opens the specified file with the appropriate flags and permissions. It then closes the standard file descriptor, duplicates the new file descriptor, and closes the original file descriptor.
-
-addBGprocess():
-This accepts a pid as its argument. It allocates memory for a new background process, sets the pid of the new background process, and adds it to the linked list of background processes. The function returns the process ID of the added process. However, i have no idea whether the processes were actually running in the background or it was just printing a message that it was. even when adding the ampersand after 'ls' it was still outputting the ls output, which i wasnt sure if it was supposed to do?
 
 The handle_pipe() function:
 Accepts the command tokens, the number of tokens, the pipe index, an array of Redirection structures, and a flag indicating whether stderr should be piped. The function creates a pipe and devides the tokens into left and right sides of the pipe. It creates two child processes, one for the left side and another for the right side. In the left child process, it redirects stdout (and stderr) to the write end of the pipe and executes the left-side command. In the right child process, it redirects stdin to the read end of the pipe and executes the right-side command. The parent process waits for the right child process to finish before continuing.
@@ -39,6 +38,9 @@ I was having an issue where I was getting a 'double free()' error, but it wasn't
 
 Previously, I also didn't implement the -a argument, so I added that as well.
 It was working perfectly but towars the end it started showing the path but returning 'file not found' for everything (so will fix this in the future).
+
+addBGprocess():
+This accepts a pid as its argument. It allocates memory for a new background process, sets the pid of the new background process, and adds it to the linked list of background processes. The function returns the process ID of the added process. However, i have no idea whether the processes were actually running in the background or it was just printing a message that it was. even when adding the ampersand after 'ls' it was still outputting the ls output, which i wasnt sure if it was supposed to do?
 
 list() function:
 I thought a lot about which of the built in commands to fork as a child process. I ended up messing heavily with a lot of my existing code because I got caught up in trying to make most built-ins a child proccess that were then not communicating with the parent and frankly unneccesary. Only list() made sense, so I added implementation to check if '&' was at the end of the command line and fork a child process for list. I also was running into an issue where 'ls -l' wasn't working but if i defined the path, as '/bin/ls -l' it was. I tried using echo $PATH to check what was up but my shell wasn't recognizing those environment variables. I started implementing code to force it to regognize the '$', 'echo' and others but I decided to fix this later since there were other more important things to do.
